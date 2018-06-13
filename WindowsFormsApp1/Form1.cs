@@ -13,37 +13,25 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        public string[] initial = new string[1047];
-        public string[] values = new string[1047];
+        public List<string> initial = new List<string>();
+        public List<string> values = new List<string>();
         public int counter = 0;
-        public StreamReader teletext = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\My Games\\paladinsroyale\\RealmGame\\Config\\RealmSystemSettings.ini");
+        public string chosen = "";
+        public StreamReader teletext;
         public StreamWriter output = new StreamWriter("output.ini");
         public Form1()
         {
 
             InitializeComponent();
+            listBox1.Hide();
             checkBox1.Hide();
             textBox1.Hide();
             checkBox2.Hide();
             button3.Hide();
-            while (teletext.Peek() != -1)
-            {
-                string[] split = teletext.ReadLine().Split('=');
-                listBox1.Items.Add(split[0]);
-                if (split[0] != "" && !split[0].Contains("["))
-                {
-                    for (int i = 1; i < split.Count(); i++)
-                    {
-                        values[counter] += split[i];
-                        if (i != split.Count() - 1)
-                        {
-                            values[counter] += "=";
-                        }
-                    }
-                }
-                counter++;
-            }
-            teletext.Close();
+            listBox2.Items.Add("RealmGame");
+            listBox2.Items.Add("RealmInput");
+            listBox2.Items.Add("RealmSystemSettings");
+            
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -132,6 +120,33 @@ namespace WindowsFormsApp1
                 outputreal.Write("\r\n");
             }
             outputreal.Close();
+        }
+
+        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            chosen = listBox2.Items[listBox2.SelectedIndex].ToString();
+            teletext = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\My Games\\paladinsroyale\\RealmGame\\Config\\" + chosen + ".ini");
+            while (teletext.Peek() != -1)
+            {
+                string[] split = teletext.ReadLine().Split('=');
+                if (split[0] != "" && !split[0].Contains("["))
+                {
+                    listBox1.Items.Add(split[0]);
+                    values.Add(split[1]);
+                    for (int i = 2; i < split.Count(); i++)
+                    {
+                        values[counter] += split[i];
+                        if (i != split.Count() - 1)
+                        {
+                            values[counter] += "=";
+                        }
+                    }
+                    counter++;
+                }
+            }
+            teletext.Close();
+            listBox2.Hide();
+            listBox1.Show();
         }
     }
 }
